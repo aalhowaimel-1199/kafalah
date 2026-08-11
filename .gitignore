@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.turbo/
+.vite/
+*.log
+.env
+.env.local
+.DS_Store
+packages/db/prisma/migrations/dev.db
+coverage/
+
+# مخلّفات محاولات الأرشفة/الرفع السابقة
+Archive
+Archive.zip
+Archive 2/
+معاينة-التصميم.html
+
+archive_project/

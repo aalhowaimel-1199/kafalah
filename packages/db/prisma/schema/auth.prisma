@@ -1,0 +1,78 @@
+enum Role {
+  ADMIN
+  APPROVER
+  RECEPTION
+  SECURITY
+  EMPLOYEE
+}
+
+model User {
+  id                  String   @id @default(cuid())
+  name                String
+  email               String   @unique
+  emailVerified       Boolean  @default(false)
+  image               String?
+  role                Role     @default(RECEPTION)
+  canApprove          Boolean  @default(false)
+  canInvite           Boolean  @default(false)
+  inviteAutoApprove   Boolean  @default(false)
+  canManageSettings   Boolean  @default(false)
+  active              Boolean  @default(true)
+  departmentId        String?
+  department          Department? @relation(fields: [departmentId], references: [id])
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  sessions       Session[]
+  accounts       Account[]
+  approvedVisits VisitRequest[] @relation("ApprovedBy")
+  createdVisits  VisitRequest[] @relation("CreatedBy")
+  notes          VisitorNote[]
+  blacklistAdds  BlacklistEntry[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verifications")
+}

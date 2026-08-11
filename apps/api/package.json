@@ -1,0 +1,32 @@
+{
+  "name": "@ramh/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "bootstrap": "tsx src/scripts/bootstrap.ts",
+    "sweep": "tsx src/scripts/sweep.ts",
+    "biotime:poll": "tsx src/scripts/biotime-poll.ts",
+    "build": "node ../../scripts/build-api.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.1",
+    "@ramh/db": "workspace:*",
+    "@ramh/shared": "workspace:*",
+    "better-auth": "^1.1.0",
+    "bwip-js": "^4.5.1",
+    "dotenv": "^16.4.5",
+    "hono": "^4.6.3",
+    "nodemailer": "^6.9.15",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "@types/nodemailer": "^6.4.16",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  }
+}

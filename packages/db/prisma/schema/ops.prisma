@@ -1,0 +1,87 @@
+model VisitReason {
+  id        String   @id @default(cuid())
+  nameAr    String
+  nameEn    String
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  visits    VisitRequest[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("visit_reasons")
+}
+
+model Department {
+  id        String   @id @default(cuid())
+  nameAr    String
+  nameEn    String
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  visits    VisitRequest[]
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("departments")
+}
+
+model BlacklistEntry {
+  id          String   @id @default(cuid())
+  name        String
+  identifier  String
+  reason      String?
+  active      Boolean  @default(true)
+  createdById String?
+  createdBy   User?    @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("blacklist_entries")
+}
+
+model VisitorNote {
+  id         String   @id @default(cuid())
+  visitorKey String
+  body       String
+  authorId   String?
+  author     User?    @relation(fields: [authorId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@index([visitorKey])
+  @@map("visitor_notes")
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model EmailLog {
+  id        String   @id @default(cuid())
+  to        String
+  subject   String
+  type      String
+  status    String
+  error     String?
+  createdAt DateTime @default(now())
+
+  @@map("email_logs")
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  titleAr   String
+  titleEn   String
+  contentAr String   @default("")
+  contentEn String   @default("")
+  published Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("pages")
+}

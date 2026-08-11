@@ -1,0 +1,18 @@
+# صورة الـ API (Hono) — تُبنى من جذر الـ monorepo
+FROM node:20-slim AS base
+RUN corepack enable
+WORKDIR /app
+
+# تثبيت الاعتمادات
+COPY pnpm-workspace.yaml package.json tsconfig.base.json ./
+COPY packages ./packages
+COPY apps/api ./apps/api
+RUN pnpm install --frozen-lockfile=false
+
+# توليد Prisma client
+RUN pnpm --filter @ramh/db generate
+
+ENV NODE_ENV=production
+EXPOSE 8787
+# طبّق الهجرات ثم شغّل الخادم
+CMD ["sh", "-c", "pnpm --filter @ramh/db deploy && pnpm --filter @ramh/api start"]

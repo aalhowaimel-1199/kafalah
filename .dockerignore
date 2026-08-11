@@ -1,0 +1,10 @@
+node_modules
+**/node_modules
+.pgdata
+.git
+**/dist
+**/.turbo
+.turbo
+*.log
+.DS_Store
+**/.DS_Store

@@ -1,0 +1,82 @@
+enum VisitStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+  CANCELLED
+}
+
+enum VisitSource {
+  PUBLIC
+  INVITATION
+  STAFF
+}
+
+enum MovementDirection {
+  IN
+  OUT
+}
+
+model VisitRequest {
+  id           String      @id @default(cuid())
+  requestNo    String      @unique
+  source       VisitSource @default(PUBLIC)
+  visitorName  String
+  nationalId   String?
+  phone        String
+  email        String
+  company      String?
+  hostName     String?
+  hostDept     String?
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  approvalNo   String?
+  reasonId     String?
+  reason       VisitReason? @relation(fields: [reasonId], references: [id])
+  reasonText   String?
+  note         String?
+  visitDate    DateTime?
+  status       VisitStatus @default(PENDING)
+
+  floors       Floor[] @relation("VisitFloors")
+  gates        Gate[]  @relation("VisitGates")
+  entryFrom    DateTime?
+  entryTo      DateTime?
+  cardNumber   String?  @unique
+  barcode      String?  @unique
+  rejectReason String?
+
+  approvedById String?
+  approvedBy   User?    @relation("ApprovedBy", fields: [approvedById], references: [id])
+  createdById  String?
+  createdBy    User?    @relation("CreatedBy", fields: [createdById], references: [id])
+
+  deviceLog      Json?
+  overstayAlerted Boolean @default(false)
+
+  movements AccessMovement[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([phone])
+  @@index([email])
+  @@map("visit_requests")
+}
+
+model AccessMovement {
+  id        String            @id @default(cuid())
+  visitId   String
+  visit     VisitRequest      @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  gateId    String?
+  gate      Gate?             @relation(fields: [gateId], references: [id])
+  floorKey  String?
+  direction MovementDirection
+  source    String?
+  at        DateTime          @default(now())
+
+  @@index([visitId])
+  @@index([at])
+  @@map("access_movements")
+}

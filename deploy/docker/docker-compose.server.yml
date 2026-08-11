@@ -1,0 +1,53 @@
+name: kafalah
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: kafalah
+      POSTGRES_PASSWORD: kafalah
+      POSTGRES_DB: kafalah
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kafalah -d kafalah"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  api:
+    image: kafalah-api:latest
+    environment:
+      DATABASE_URL: postgresql://kafalah:kafalah@db:5432/kafalah?schema=public
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-kafalah_local_secret_change_me_0123456789abcdef}
+      BETTER_AUTH_URL: http://${SERVER_HOST:-localhost}:8081
+      WEB_ORIGIN: http://${SERVER_HOST:-localhost}:8080
+      ADMIN_ORIGIN: http://${SERVER_HOST:-localhost}:8081
+      PUBLIC_WEB_URL: http://${SERVER_HOST:-localhost}:8080
+      EXTRA_ORIGINS: ${EXTRA_ORIGINS:-}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@kafalah.sa}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-Kafalah@2026}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    image: kafalah-web:latest
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  admin:
+    image: kafalah-admin:latest
+    ports:
+      - "8081:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  dbdata:

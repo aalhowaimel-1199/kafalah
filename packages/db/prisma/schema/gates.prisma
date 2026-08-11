@@ -1,0 +1,32 @@
+model Floor {
+  key                String   @id
+  nameAr             String
+  nameEn             String
+  sortOrder          Int      @default(0)
+  biotimeAccessLevel String?
+  gates              Gate[]
+  visits             VisitRequest[] @relation("VisitFloors")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("floors")
+}
+
+model Gate {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  nameAr        String
+  nameEn        String
+  floorKey      String
+  floor         Floor    @relation(fields: [floorKey], references: [key])
+  biotimeDoorId String?
+  isExit        Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  visits    VisitRequest[]    @relation("VisitGates")
+  movements AccessMovement[]
+
+  @@map("gates")
+}
